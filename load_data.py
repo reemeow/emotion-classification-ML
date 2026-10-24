@@ -1,3 +1,6 @@
+
+#just quick look on the data we want to use
+
 from datasets import load_dataset
 from collections import Counter
 dataset = load_dataset("google-research-datasets/go_emotions", "simplified")
