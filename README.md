@@ -43,3 +43,43 @@ emotion_distribution.png: Visualizes the distribution of emotion classes in the 
 ## Emotion Distribution
 The dataset contains four emotion classes with an imbalanced distribution, where Neutral is the majority class.
 
+## Installation & Usage
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/reemeow/emotion-classification-ML.git
+cd emotion-classification-ML
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate the environment:
+
+**Windows:**
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux:**
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the model
+
+```bash
+python train.py
+```
+
+**Note:** The training script requires the dataset files to be available at the paths expected by the data-loading module. Check the dataset configuration before running the experiment.
