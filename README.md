@@ -9,11 +9,11 @@
 
 A multiclass text emotion classifier implemented with NumPy.
 
-I started this project to understand Logistic Regression at the implementation level rather than just using a ready-made model. I built the classifier, experimented with training settings, evaluated its performance, and looked into some of its incorrect predictions.
+I started this project to understand Logistic Regression at the implementation level rather than just using a ready-made model. I built the classifier, experimented with training settings, evaluated its performance, and investigated some of its incorrect predictions.
 
-This repository contains the implementation, training scripts, evaluation results, and a few experiments on model interpretation.
+This repository contains the model implementation, training scripts, evaluation results, and experiments on model interpretation.
 
-## 1. What the model does
+## 1. What the Model Does
 
 Given a piece of English text, the model predicts one of four labels:
 
@@ -24,15 +24,15 @@ Given a piece of English text, the model predicts one of four labels:
 
 The pipeline is:
 
-**Text → TF-IDF features → Logistic Regression → Class probabilities → Prediction**
+**Text → TF-IDF Features → Logistic Regression → Class Probabilities → Prediction**
 
-The classifier itself is written from scratch. I use scikit-learn for feature extraction, cross-validation, and evaluation metrics.
+The classifier itself is implemented from scratch. Scikit-learn is used for feature extraction, cross-validation, and evaluation metrics.
 
 ## 2. Dataset
 
-The training and validation data contain the following class distributions:
+The training and validation data have the following class distributions:
 
-| Emotion | Train | Validation |
+| Emotion | Training | Validation |
 |---|---:|---:|
 | Joy | 845 | 106 |
 | Sadness | 815 | 84 |
@@ -40,7 +40,7 @@ The training and validation data contain the following class distributions:
 | Neutral | 12,792 | 1,586 |
 | **Total** | **15,473** | **1,883** |
 
-Neutral makes up most of the dataset. This is important because a model can achieve fairly high accuracy by predicting Neutral frequently, even if it performs poorly on the other emotions.
+Neutral makes up most of the dataset. This is important because a model can achieve relatively high accuracy by predicting Neutral frequently, even if it performs poorly on the other emotions.
 
 To address this, I experimented with class weighting and used Macro F1 alongside accuracy.
 
@@ -50,7 +50,7 @@ The dataset files are not included in this repository. The data-loading and prep
 
 The Logistic Regression model is implemented in `LR.py`.
 
-### Forward pass
+### Forward Pass
 
 The model computes linear scores:
 
@@ -58,43 +58,43 @@ The model computes linear scores:
 Z = XW + b
 \]
 
-Then applies softmax to convert them into probabilities:
+These scores are converted into class probabilities using softmax:
 
 \[
 P(y=k\mid x) = \frac{e^{z_k}}{\sum_j e^{z_j}}
 \]
 
-### Loss and optimization
+### Loss and Optimization
 
 Training uses weighted cross-entropy loss and gradient descent.
 
-The main steps are:
+The training process consists of:
 
-1. Compute class probabilities.
-2. Calculate the weighted loss.
-3. Compute gradients for weights and biases.
-4. Update the parameters using the learning rate.
-5. Repeat for the selected number of epochs.
+1. Computing class probabilities.
+2. Calculating the weighted loss.
+3. Computing gradients for weights and biases.
+4. Updating the parameters using the learning rate.
+5. Repeating the process for the selected number of epochs.
 
-I also implemented a prediction threshold. If the highest predicted probability is below the threshold, the model returns `-1` (uncertain) instead of assigning an emotion.
+I also implemented a confidence threshold. If the highest predicted probability is below the threshold, the model returns `-1` (uncertain) instead of assigning an emotion.
 
-### Feature extraction
+### Feature Extraction
 
-Text is converted into TF-IDF vectors using:
+Text is converted into TF-IDF vectors using the following settings:
 
-| Setting | Value |
+| Parameter | Value |
 |---|---|
 | `min_df` | 2 |
 | `max_features` | 5,000 |
 | Normalization | L2 |
 
-## 4. Training experiments
+## 4. Training Experiments
 
 I experimented with different learning rates, epoch counts, class-weight settings, and confidence thresholds.
 
 I used stratified 5-fold cross-validation to compare configurations while maintaining the class distribution across folds.
 
-The final settings were:
+### Final Configuration
 
 | Parameter | Value |
 |---|---|
@@ -106,9 +106,19 @@ The final settings were:
 
 One thing I noticed during experimentation was the trade-off between confidence threshold and coverage. A higher threshold rejected more predictions, while a lower threshold increased coverage.
 
+### Experiment Log
+
+I kept an Excel workbook to track the experiments, including hyperparameter settings, cross-validation results, and per-class evaluation metrics.
+
+The workbook includes an experiment index and separate sheets for different runs. This makes it easier to compare configurations and revisit earlier results.
+
+Some older experiments have incomplete parameter records.
+
+**[View Experiment Log](results/experiments/Emotion_Classification_Experiments.xlsx)**
+
 ## 5. Results
 
-Final evaluation on the held-out validation set:
+The final model was evaluated on a held-out validation set.
 
 | Metric | Result |
 |---|---:|
@@ -116,28 +126,28 @@ Final evaluation on the held-out validation set:
 | Macro F1 | 0.6879 |
 | Coverage | 99.84% |
 
-### Per-class performance
+### Per-Class Performance
 
-| Emotion | Precision | Recall | F1 |
+| Emotion | Precision | Recall | F1-score |
 |---|---:|---:|---:|
 | Joy | 0.70 | 0.67 | 0.68 |
 | Sadness | 0.58 | 0.63 | 0.61 |
 | Anger | 0.55 | 0.52 | 0.54 |
 | Neutral | 0.93 | 0.93 | 0.93 |
 
-Neutral has the strongest results, which is expected given the class distribution. Anger and Sadness are more difficult for the model.
+Neutral has the strongest results, which is consistent with the class distribution. Anger and Sadness remain more difficult for the model.
 
-The accuracy looks relatively high, but Macro F1 gives a better picture of how the model performs across all four emotions.
+Although overall accuracy is relatively high, Macro F1 provides a better picture of performance across all four classes.
 
-The full confusion matrix, metrics, and error analysis are available in `results/final_evaluation/`.
+The full confusion matrix, evaluation metrics, and error analysis are available in `results/final_evaluation/`.
 
-## 6. Looking into the predictions
+## 6. Looking Into the Predictions
 
 After evaluating the model, I wanted to understand which words were influencing its decisions.
 
-### Feature weights
+### Feature Weights
 
-Because Logistic Regression is linear, I can inspect its learned weights to see which TF-IDF features are associated with each class.
+Because Logistic Regression is a linear model, I can inspect its learned weights to identify features associated with each emotion.
 
 Some of the strongest relative features were:
 
@@ -150,7 +160,7 @@ Some of the strongest relative features were:
 
 These weights describe the model's learned associations, not necessarily the meaning of a word in every context.
 
-### An incorrect prediction
+### An Incorrect Prediction
 
 One example from the error analysis:
 
@@ -158,10 +168,11 @@ One example from the error analysis:
 
 > damn so the patriots are gonna get thielen after all
 
-**Actual label:** Neutral  
+**Actual label:** Neutral
+
 **Predicted label:** Anger
 
-I checked the contribution of individual features and then removed the word `damn` to see whether the prediction would change.
+I examined the contribution of individual features and then removed the word `damn` to see whether the prediction would change.
 
 | Version | Joy | Sadness | Anger | Neutral |
 |---|---:|---:|---:|---:|
@@ -170,17 +181,19 @@ I checked the contribution of individual features and then removed the word `dam
 
 After removing the word, the prediction changed from Anger to Neutral.
 
-This was a useful example of how a single word can strongly influence a bag-of-words-based classifier, even when the full sentence has a different meaning.
+This example shows how a single word can strongly influence a TF-IDF-based linear classifier, even when the overall context suggests a different interpretation.
 
-The corresponding files are:
+The corresponding analysis files are:
 
 - `feature_importance.csv`
 - `local_interpretation_anger_neutral.csv`
 - `counterfactual_analysis.csv`
 
-All are located in `results/final_evaluation/`.
+All three files are located in `results/final_evaluation/`.
 
-## 7. Project structure
+This is one illustrative example rather than a general conclusion about all similar sentences.
+
+## 7. Project Structure
 
 ```text
 emotion-classification-ML/
@@ -193,6 +206,8 @@ emotion-classification-ML/
 ├── requirements.txt
 ├── README.md
 └── results/
+    ├── experiments/
+    │   └── Emotion_Classification_Experiments.xlsx
     └── final_evaluation/
         ├── emotion_distribution.png
         ├── final_evaluation_metrics.csv
@@ -203,16 +218,16 @@ emotion-classification-ML/
         └── counterfactual_analysis.csv
 ```
 
-## 8. Running the project
+## 8. Running the Project
 
-Clone the repository:
+### Clone the Repository
 
 ```bash
 git clone https://github.com/reemeow/emotion-classification-ML.git
 cd emotion-classification-ML
 ```
 
-Create a virtual environment:
+### Create a Virtual Environment
 
 ```bash
 python -m venv .venv
@@ -224,39 +239,45 @@ Activate it on Windows:
 .venv\Scripts\activate
 ```
 
-Install the dependencies:
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Place the required dataset files in the `data/` directory using the paths expected by the loading scripts.
+### Prepare the Dataset
 
-Run the training experiments:
+Place the required dataset files in the `data/` directory using the paths expected by the data-loading scripts.
+
+The dataset is excluded from the repository.
+
+### Run Training Experiments
 
 ```bash
 python train.py
 ```
 
-Or run the final evaluation:
+### Run Final Evaluation
 
 ```bash
 python final_evaluation.py
 ```
 
-## 9. Notes and limitations
+The evaluation results are saved in `results/final_evaluation/`.
+
+## 9. Notes and Limitations
 
 A few things worth keeping in mind:
 
-- **Class imbalance:** Neutral dominates the dataset, so accuracy can be misleading.
-- **Limited context:** TF-IDF does not understand word order or meaning the way a contextual language model does.
+- **Class imbalance:** Neutral dominates the dataset, so accuracy alone can be misleading.
+- **Limited context:** TF-IDF does not capture contextual meaning in the same way as a language model.
 - **Ambiguous language:** Words associated with anger can appear in neutral conversations, sarcasm, or casual expressions.
-- **Thresholds:** Rejecting low-confidence predictions changes coverage and may affect the interpretation of evaluation metrics.
-- **Probabilities:** Softmax outputs are not automatically well-calibrated confidence estimates.
+- **Confidence thresholds:** Rejecting low-confidence predictions affects coverage and how evaluation metrics should be interpreted.
+- **Probability calibration:** Softmax probabilities are not automatically calibrated confidence estimates.
 
-This is an experimental implementation intended for learning and analysis, not a production classifier.
+This is an experimental implementation intended for learning and analysis, not a production-ready emotion classifier.
 
-## 10. Possible next steps
+## 10. Possible Next Steps
 
 Some directions I may explore later:
 
