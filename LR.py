@@ -69,6 +69,11 @@ class LogisticRegressionScratch:
 
         return predictions
 
+    def predict_proba(self, x):
+        z = self.forward(x)
+        prob = self.softmax(z)
+        return prob
+
 
 if __name__ == "__main__":
     X_test = np.array([[1, 0, 1], [0, 1, 1]])

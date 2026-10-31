@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 data/
+results/experiments/
+.ipynb_checkpoints/
