@@ -6,7 +6,7 @@
 ![NumPy](https://img.shields.io/badge/NumPy-From%20Scratch-013243?logo=numpy&logoColor=white)
 ![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Classification-7952B3)
 ![Status](https://img.shields.io/badge/Status-Experimental-blueviolet)
-datasets
+![Hugging Face Datasets](https://img.shields.io/badge/Hugging%20Face-Datasets-FFD21E?logo=huggingface&logoColor=black)
 
 ---
 
