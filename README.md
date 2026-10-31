@@ -348,7 +348,7 @@ The processed dataset files are excluded from version control and can be regener
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/reemeow/emotion-classification-ML.git
+git clone https://github.com/reemwork/emotion-classification-ML.git
 cd emotion-classification-ML
 ```
 
