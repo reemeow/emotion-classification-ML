@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class LogisticRegressionScrtach:
+class LogisticRegressionScratch:
     def forward(self, x):
       return x @ self.W + self.b
     
@@ -55,18 +55,7 @@ class LogisticRegressionScrtach:
         if (epoch + 1) % 10 == 0:
             print(f"Epoch {epoch + 1}, Loss: {loss:.4f}")
 
-    # def fit(self, x, y, learning_rate=0.01, epochs=100):
-    #     for epoch in range(epochs):
-    #         print(f"Starting epoch {epoch + 1}", flush=True)
-
-    #         z= self.forward(x)
-    #         prob = self.softmax(z)
-    #         loss = self.compute_loss(prob, y)
-    #         dw, db = self.backward(x, prob, y)
-    #         self.update_parameters(dw, db, learning_rate)
-    #         if (epoch + 1) % 10 == 0:
-    #             print(f"Epoch {epoch + 1}, Loss: {loss:.4f}")
-
+   
     def predict(self, x):
         z = self.forward(x)
         prob = self.softmax(z)
@@ -76,7 +65,7 @@ class LogisticRegressionScrtach:
 
 if __name__ == "__main__":
     X_test = np.array([[1, 0, 1],[0, 1, 1]])
-    test_model = LogisticRegressionScrtach(n_features=3, n_classes=3)
+    test_model = LogisticRegressionScratch(n_features=3, n_classes=3)
 
     score = test_model.forward(X_test)
     prob= test_model.softmax(score)
