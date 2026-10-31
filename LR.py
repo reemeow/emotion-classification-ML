@@ -1,85 +1,94 @@
+
 import numpy as np
 
 
 class LogisticRegressionScratch:
+    def __init__(self, n_features, n_classes, class_weights=None):
+        self.W = np.zeros((n_features, n_classes))
+        self.b = np.zeros(n_classes)
+        self.class_weights = (
+            class_weights if class_weights is not None
+            else np.ones(n_classes)
+        )
+
     def forward(self, x):
-      return x @ self.W + self.b
-    
+        return x @ self.W + self.b
+
+    def softmax(self, z):
+        exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+        return exp_z / np.sum(exp_z, axis=1, keepdims=True)
+
     def compute_loss(self, prob, y):
         y = np.asarray(y, dtype=int)
+        m = len(y)
 
-        m= len(y)
-        correct_prob=prob[np.arange(m), y]
-        loss= -np.log(correct_prob+1e-12)
+        correct_prob = prob[np.arange(m), y]
+        loss = -np.log(correct_prob + 1e-12)
         weighted_losses = loss * self.class_weights[y]
+
         return np.mean(weighted_losses)
-    
-    def softmax(self, z):
-        exp_z= np.exp(z-np.max(z, axis=1, keepdims=True))
-        return exp_z/np.sum(exp_z, axis=1, keepdims=True)
-    
-    def __init__(self, n_features, n_classes, class_weights=None):
-        self.W=np.zeros((n_features, n_classes))
-        self.b=np.zeros((n_classes))
-        self.class_weights = class_weights if class_weights is not None else np.ones(n_classes)
 
     def backward(self, x, prob, y):
-         m = len(y)
-         y = np.asarray(y, dtype=int)
-         sample_weights = self.class_weights[y][:, np.newaxis]
+        m = len(y)
+        y = np.asarray(y, dtype=int)
 
-         y_onehot = np.eye(self.W.shape[1])[y]
+        sample_weights = self.class_weights[y][:, np.newaxis]
+        y_onehot = np.eye(self.W.shape[1])[y]
 
-         dz = prob - y_onehot
-         dz = dz * sample_weights
+        dz = (prob - y_onehot) * sample_weights
 
-         dw = (x.T @ dz) / m
-         db = np.sum(dz, axis=0) / m
+        dw = (x.T @ dz) / m
+        db = np.sum(dz, axis=0) / m
 
-         return dw, db
+        return dw, db
 
     def update_parameters(self, dw, db, learning_rate):
-        self.W -= learning_rate*dw
-        self.b -= learning_rate*db
-
+        self.W -= learning_rate * dw
+        self.b -= learning_rate * db
 
     def fit(self, x, y, learning_rate=0.01, epochs=100):
-     for epoch in range(epochs):
+        for epoch in range(epochs):
+            z = self.forward(x)
+            prob = self.softmax(z)
+            loss = self.compute_loss(prob, y)
+
+            dw, db = self.backward(x, prob, y)
+            self.update_parameters(dw, db, learning_rate)
+
+            if (epoch + 1) % 10 == 0:
+                print(f"Epoch {epoch + 1}, Loss: {loss:.4f}")
+
+    def predict(self, x, threshold=0.5):
         z = self.forward(x)
         prob = self.softmax(z)
-        loss = self.compute_loss(prob, y)
 
-        dw, db = self.backward(x, prob, y)
-        self.update_parameters(dw, db, learning_rate)
+        confidence = np.max(prob, axis=1)
+        predictions = np.argmax(prob, axis=1)
 
-        if (epoch + 1) % 10 == 0:
-            print(f"Epoch {epoch + 1}, Loss: {loss:.4f}")
+        predictions[confidence < threshold] = -1
 
-   
-    def predict(self, x):
-        z = self.forward(x)
-        prob = self.softmax(z)
-        return np.argmax(prob,axis=1)
-
+        return predictions
 
 
 if __name__ == "__main__":
-    X_test = np.array([[1, 0, 1],[0, 1, 1]])
+    X_test = np.array([[1, 0, 1], [0, 1, 1]])
     test_model = LogisticRegressionScratch(n_features=3, n_classes=3)
 
     score = test_model.forward(X_test)
-    prob= test_model.softmax(score)
-    
-    print("Probabilities:" )
+    prob = test_model.softmax(score)
+
+    print("Probabilities:")
     print(prob)
 
-    y_test= np.array([0, 2])
-    loss= test_model.compute_loss(prob, y_test)
+    y_test = np.array([0, 2])
+    loss = test_model.compute_loss(prob, y_test)
+
     print("Loss:", loss)
     print("row's sum:", prob.sum(axis=1))
-    print("Test model score: ", score)
-    print("score shape", score.shape)
-    
+    print("Test model score:", score)
+    print("score shape:", score.shape)
+
     test_model.fit(X_test, y_test, learning_rate=0.1, epochs=500)
+
     pred = test_model.predict(X_test)
     print("Predictions:", pred)

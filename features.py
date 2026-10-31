@@ -1,7 +1,7 @@
 #an extra file just to show how we transform examples into vectors 
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
 train = pd.read_csv("data/train.csv")

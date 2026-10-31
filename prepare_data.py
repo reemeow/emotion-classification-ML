@@ -2,7 +2,8 @@
 #clean and prepare the data for training, validation and testing
 #we drop examples with multiple emotions and remove duplicates
 
-from pathlib import Path 
+from pathlib import Path
+
 import pandas as pd
 from datasets import load_dataset
 
