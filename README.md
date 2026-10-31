@@ -1,3 +1,4 @@
+
 # Emotion Classification — Logistic Regression from Scratch
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
@@ -30,7 +31,24 @@ The classifier itself is implemented from scratch. Scikit-learn is used for feat
 
 ## 2. Dataset
 
-The training and validation data have the following class distributions:
+This project uses the [GoEmotions dataset](https://huggingface.co/datasets/google-research-datasets/go_emotions) from Google Research, loaded through Hugging Face using the `simplified` configuration.
+
+GoEmotions contains Reddit comments annotated with emotion labels. I selected four classes for this project: **Joy, Sadness, Anger, and Neutral**.
+
+### Data Preparation
+
+The dataset is prepared in `prepare_data.py` using the following steps:
+
+1. Keep only examples with exactly one emotion label.
+2. Filter the data to the four selected emotions.
+3. Convert text to lowercase, normalize whitespace, and remove empty text.
+4. Remove texts associated with conflicting emotion labels within each split.
+5. Remove duplicate texts within each split.
+6. Remove overlapping texts between training, validation, and test sets to reduce data leakage.
+
+The cleaned data is saved as three CSV files: `train.csv`, `val.csv`, and `test.csv`.
+
+### Class Distribution
 
 | Emotion | Training | Validation |
 |---|---:|---:|
@@ -40,11 +58,17 @@ The training and validation data have the following class distributions:
 | Neutral | 12,792 | 1,586 |
 | **Total** | **15,473** | **1,883** |
 
-Neutral makes up most of the dataset. This is important because a model can achieve relatively high accuracy by predicting Neutral frequently, even if it performs poorly on the other emotions.
+Neutral makes up most of the dataset, creating a significant class imbalance. A model can achieve relatively high accuracy by predicting Neutral frequently, even if it performs poorly on the other emotions.
 
 To address this, I experimented with class weighting and used Macro F1 alongside accuracy.
 
-The dataset files are not included in this repository. The data-loading and preparation code can be found in `load_data.py` and `prepare_data.py`.
+The dataset files are excluded from this repository, but they can be regenerated using:
+
+```bash
+python prepare_data.py
+```
+
+Dataset inspection is handled in `load_data.py`, while data cleaning and preparation are handled in `prepare_data.py`.
 
 ## 3. Implementation
 
@@ -54,15 +78,15 @@ The Logistic Regression model is implemented in `LR.py`.
 
 The model computes linear scores:
 
-\[
+$$
 Z = XW + b
-\]
+$$
 
 These scores are converted into class probabilities using softmax:
 
-\[
+$$
 P(y=k\mid x) = \frac{e^{z_k}}{\sum_j e^{z_j}}
-\]
+$$
 
 ### Loss and Optimization
 
@@ -201,7 +225,7 @@ emotion-classification-ML/
 ├── train.py               # Training and experiments
 ├── final_evaluation.py    # Final evaluation and analysis
 ├── features.py            # TF-IDF feature extraction
-├── load_data.py           # Dataset loading
+├── load_data.py           # Dataset inspection
 ├── prepare_data.py        # Data preparation
 ├── requirements.txt
 ├── README.md
@@ -247,9 +271,22 @@ pip install -r requirements.txt
 
 ### Prepare the Dataset
 
-Place the required dataset files in the `data/` directory using the paths expected by the data-loading scripts.
+Run the data preparation script:
 
-The dataset is excluded from the repository.
+```bash
+python prepare_data.py
+```
+
+This downloads the GoEmotions dataset, applies the filtering and cleaning steps, and creates:
+
+```text
+data/
+├── train.csv
+├── val.csv
+└── test.csv
+```
+
+The dataset files are excluded from the repository.
 
 ### Run Training Experiments
 
